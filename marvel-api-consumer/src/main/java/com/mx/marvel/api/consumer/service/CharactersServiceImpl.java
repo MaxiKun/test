@@ -1,6 +1,5 @@
 package com.mx.marvel.api.consumer.service;
 
-import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
