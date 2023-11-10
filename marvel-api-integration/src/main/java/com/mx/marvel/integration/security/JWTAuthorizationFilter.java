@@ -17,17 +17,22 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.mx.marvel.integration.constants.ConsumerCharactersConstants;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
 
 /**
  * @author MBL
  */
 
 public class JWTAuthorizationFilter extends OncePerRequestFilter {
+	
+	private String secretKey; 
+	
+	public JWTAuthorizationFilter(String secretKey) {
+		
+		this.secretKey = secretKey;
+		
+	}
 
 	/**Método que se invoca una vez por cada solicitud HTTP para realizar la autorización basada en JWT.
 	 *
@@ -48,7 +53,10 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 		
 		try {
 			
-			if (existeJWTToken(request, response)) {
+			 String path = request.getRequestURI();
+			 boolean validarToken = path.contains("/getDataBitacora");  
+			
+			if (validarToken && existeJWTToken(request)) {
 				
 				Claims claims = validateToken(request);
 				
@@ -70,11 +78,10 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 			
 			chain.doFilter(request, response);
 			
-		} catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException e) {
+		} catch (Exception e) {
 			
 			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
-			return;
+			response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
 			
 		}
 		
@@ -94,7 +101,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 	 */
 	private Claims validateToken(HttpServletRequest request) {
 		String jwtToken = request.getHeader(ConsumerCharactersConstants.HEADER).replace(ConsumerCharactersConstants.PREFIX, "");
-		return Jwts.parser().setSigningKey(ConsumerCharactersConstants.SECRET.getBytes()).parseClaimsJws(jwtToken).getBody();
+		return Jwts.parser().setSigningKey(secretKey.getBytes()).parseClaimsJws(jwtToken).getBody();
 	}
 
 	/**Método para establecer la autenticación en el contexto de seguridad de Spring a partir de las declaraciones (claims) de un token JWT.
@@ -120,11 +127,10 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 	 * 
 	 * @param request  La solicitud HTTP. Puedes usar esto para obtener información sobre la solicitud,
 	 *                 como los encabezados, que pueden incluir el token JWT.
-	 * @param response La respuesta HTTP. Puedes usar esto para modificar la respuesta que se enviará al cliente.
 	 * @return boolean: true si el token JWT existe en la solicitud HTTP, de lo contrario false.
 	 * @autor MBL
 	 */
-	private boolean existeJWTToken(HttpServletRequest request, HttpServletResponse response) {
+	private boolean existeJWTToken(HttpServletRequest request) {
 		
 		String authenticationHeader = request.getHeader(ConsumerCharactersConstants.HEADER);
 			

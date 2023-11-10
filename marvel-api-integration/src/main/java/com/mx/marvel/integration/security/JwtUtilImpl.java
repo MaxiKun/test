@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.mx.marvel.integration.security;
 
 import java.util.Date;
@@ -35,11 +32,21 @@ public class JwtUtilImpl implements JwtUtil{
 	@Override
 	public String validateCredentials(String username, String password) {
 		
-		String token = getJWTToken(username);
+		boolean usuarioEncontrado = ("root".equals(username) && "admin".equals(password));
 		JSONObject response = new JSONObject();
-				
-		response.put(ConsumerCharactersConstants.KEY_STATUS, HttpStatus.OK.value());
-		response.put("token", token);
+		
+		if(usuarioEncontrado) {
+			
+			String token = getJWTToken(username);
+			
+			response.put(ConsumerCharactersConstants.KEY_STATUS, HttpStatus.OK.value());
+			response.put(ConsumerCharactersConstants.KEY_TOKEN, token);
+			
+		}else {
+			
+			response.put(ConsumerCharactersConstants.KEY_STATUS, HttpStatus.FORBIDDEN.value());
+			
+		}
 		
 		return response.toString();
 		
@@ -66,7 +73,7 @@ public class JwtUtilImpl implements JwtUtil{
 								.map(GrantedAuthority::getAuthority)
 								.collect(Collectors.toList()))
 				.setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + 600000))
+				.setExpiration(new Date(System.currentTimeMillis() + 60000))
 				.signWith(SignatureAlgorithm.HS512, secretKey.getBytes()).compact();
 
 		return "Bearer " + token;

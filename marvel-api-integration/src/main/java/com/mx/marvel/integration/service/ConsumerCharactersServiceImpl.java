@@ -3,6 +3,7 @@ package com.mx.marvel.integration.service;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -222,5 +223,16 @@ public class ConsumerCharactersServiceImpl implements ConsumerCharactersService{
 		}
 		
 	}
+	
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<BitacoraAccesoMarvelEntity> getDataBitacora() {
+		
+		return (List<BitacoraAccesoMarvelEntity>) bitacoraRepository.findAll();
+		
+	} 
 	
 }

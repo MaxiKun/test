@@ -15,7 +15,5 @@ public class MarvelIntegrationApiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MarvelIntegrationApiApplication.class, args);
 	}
-	
 
-	
 }

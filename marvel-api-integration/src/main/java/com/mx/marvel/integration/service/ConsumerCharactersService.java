@@ -1,5 +1,9 @@
 package com.mx.marvel.integration.service;
 
+import java.util.List;
+
+import com.mx.marvel.integration.repository.BitacoraAccesoMarvelEntity;
+
 /**
  * @author MBL
  */
@@ -13,5 +17,10 @@ public interface ConsumerCharactersService {
 	 * @author MBL
 	 */
 	String getCharacters(Integer characterId);
+	
+	/**Este método se utiliza para obtener todos los registros de la bitácora de acceso a la API de Marvel.
+	 * @return Una lista de entidades BitacoraAccesoMarvelEntity que representan los registros de la bitácora de acceso.
+	 */
+	List<BitacoraAccesoMarvelEntity> getDataBitacora();
 	
 }
